@@ -16,7 +16,6 @@ for(int x = 0; x < 350; x++)
     }
     File.AppendAllLines("../DataSet/weather-data.csv", data.Select(x => $"{x.name};{x.record}"));
     Console.WriteLine($"Created {count} records at {x} iteration");
-    //Thread.Sleep(250);
 }
 
 var fileLength = File.ReadAllLines("../DataSet/weather-data.csv").Length;
