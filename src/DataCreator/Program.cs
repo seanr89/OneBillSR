@@ -3,8 +3,10 @@
     .Select(x => new Station(x[0]))
     .ToList();
 
-int count = 75000;
-for(int x = 0; x < 350; x++)
+int count = 15000;
+
+
+for(int x = 0; x < 50; x++)
 {
     var rand = new Random();
     List<WeatherRecord> data = [];
