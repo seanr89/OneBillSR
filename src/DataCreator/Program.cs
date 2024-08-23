@@ -3,10 +3,10 @@
     .Select(x => new Station(x[0]))
     .ToList();
 
-int count = 15000;
+int count = 25000;
 
 
-for(int x = 0; x < 50; x++)
+for(int x = 0; x < 100; x++)
 {
     var rand = new Random();
     List<WeatherRecord> data = [];
@@ -17,7 +17,7 @@ for(int x = 0; x < 50; x++)
         data.Add(weatheRec);
     }
     File.AppendAllLines("../DataSet/weather-data.csv", data.Select(x => $"{x.name};{x.record}"));
-    Console.WriteLine($"Created {count} records at {x} iteration");
+    //Console.WriteLine($"Created {count} records at {x} iteration");
 }
 
 var fileLength = File.ReadAllLines("../DataSet/weather-data.csv").Length;
