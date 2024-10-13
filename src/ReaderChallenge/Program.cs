@@ -1,44 +1,21 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using System.Collections.Immutable;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 Console.WriteLine("Reader Started");
 
 string fileName = "../DataSet/weather-data.csv";
 
-// var fileLength = File.ReadAllLines(fileName).Length;
-// Console.WriteLine($"Done for {fileLength:N0} filesize");
-
 var availableThreads = Environment.ProcessorCount * 2;
 
-var stationData = File.ReadAllLines("../DataSet/weather-stations.csv")
-    .Select(x => x.Split(";"))
-    .Select(x => new Station(x[0]))
-    .ToList();
+List<Station> stationData = InitialiseStations();
 
 stationData = stationData.Distinct().ToList();
+int count = 0;
 
 Stopwatch sw = new Stopwatch();
 sw.Start();
 
-int count = 0;
 
-Dictionary<string, StationStats> stats = new();
-for(int i = 0; i < stationData.Count; i++)
-{
-    var station = stationData[i];
-    var stationStat = new StationStats
-    {
-        Name = station.name,
-        Count = 0,
-        Lowest = 0,
-        Highest = 0,
-        Average = 0,
-        Total = 0
-    };
-    stats.Add(station.name, stationStat);
-}
-// Console.WriteLine($"Created {stats.Count} stats");
+// Initialize the stats dictionary and build the initial stats records
+Dictionary<string, StationStats> stats = InitializeStats(stationData);
 
 Parallel.ForEach(File.ReadLines(fileName), (line, _, lineNumber) =>
 {
@@ -67,7 +44,7 @@ Parallel.ForEach(File.ReadLines(fileName), (line, _, lineNumber) =>
 });
 // end of parallel processing
 
-Console.WriteLine($"Processed {count} records");
+Console.WriteLine($"Processed {count:N0} records");
 Console.WriteLine($"Read file in {sw.ElapsedMilliseconds}ms");
 sw.Stop();
 
@@ -80,4 +57,37 @@ orderedStats = orderedStats.Take(50).ToList();
 foreach(var stat in orderedStats)
 {
     Console.WriteLine($"{stat.Name} - Count: {stat.Count}, Lowest: {stat.Lowest}, Highest: {stat.Highest}, Average: {stat.Average:N2}");
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="stationData"></param>
+/// <returns></returns>
+static Dictionary<string, StationStats> InitializeStats(List<Station> stationData)
+{
+    Dictionary<string, StationStats> stats = new();
+    for(int i = 0; i < stationData.Count; i++)
+    {
+        var station = stationData[i];
+        var stationStat = new StationStats
+        {
+            Name = station.name,
+            Count = 0,
+            Lowest = 0,
+            Highest = 0,
+            Average = 0,
+            Total = 0
+        };
+        stats.Add(station.name, stationStat);
+    }
+    return stats;
+}
+
+static List<Station> InitialiseStations()
+{
+    return File.ReadAllLines("../DataSet/weather-stations.csv")
+        .Select(x => x.Split(";"))
+        .Select(x => new Station(x[0]))
+        .ToList();
 }
